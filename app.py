@@ -18,7 +18,7 @@ socketio = SocketIO(app, async_mode='threading')
 
 app.secret_key = os.urandom(12).hex()
 
-song_queue = {}
+song_queue = []
 
 port = 8080
 cwd = os.path.dirname(__file__)
@@ -31,21 +31,21 @@ if not os.path.isdir(song_dir):
 
 @app.route("/")
 def index():
-    if len(song_queue.keys()) >= 1:
-        now_playing = song_queue[list(song_queue.keys())[0]]["title"]
+    if len(song_queue) >= 1:
+        now_playing = song_queue[0]["title"]
     else:
         now_playing = 'Nothing is currently playing'
 
-    if len(song_queue.keys()) >= 2:
-        next_song = song_queue[list(song_queue.keys())[1]]["title"]
+    if len(song_queue) >= 2:
+        next_song = song_queue[1]["title"]
     else:
         next_song = 'Nothing is currently queued'
 
-    return render_template("mobile/index.html", active="home", now_playing=now_playing, next_song=next_song)
+    return render_template("mobile/index.jinja", active="home", now_playing=now_playing, next_song=next_song)
 
 @app.route("/queue")
 def queue():
-    return render_template("mobile/queue.html", active="queue", song_queue=song_queue )
+    return render_template("mobile/queue.jinja", active="queue", song_queue=song_queue )
 
 @app.route("/search", methods=['GET', 'POST'])
 def search():
@@ -72,11 +72,11 @@ def search():
         except Exception as e:
             print(f"Error during search: {e}")
 
-    return render_template("mobile/search.html", active="search", result=result)
+    return render_template("mobile/search.jinja", active="search", result=result)
 
 @app.route("/admin")
 def admin():
-    return render_template("mobile/admin.html", active="admin")
+    return render_template("mobile/admin.jinja", active="admin")
 
 # ---------------- TV Routes ----------------
 
@@ -93,20 +93,20 @@ def tv():
         qr = qrcode.make(f'http://{local_ip}:{port}')
         qr.save(f"{cwd}/static/qrcode.png")
 
-        return render_template("tv/index.html", local_ip=local_ip, port=port)
+        return render_template("tv/index.jinja", local_ip=local_ip, port=port)
 
 @app.route("/up_next")
 def up_next():
-    song = song_queue[list(song_queue.keys())[0]]
+    song = song_queue[0]
 
-    return render_template("tv/up_next.html", song=song)
+    return render_template("tv/up_next.jinja", song=song)
 
 @app.route('/play_video')
 def play_video():
-    song = song_queue[list(song_queue.keys())[0]]["id"]
+    song = song_queue[0]["id"]
 
-    if len(list(song_queue.keys())) > 1:
-        next_song = song_queue[list(song_queue.keys())[1]]
+    if len(song_queue) > 1:
+        next_song = song_queue[1]
     else:
         next_song = ''
 
@@ -114,7 +114,7 @@ def play_video():
     while os.path.isfile(f'{song_dir}/{song}.mp4') == False:
         sleep(1)
 
-    return render_template("tv/video_player.html", song=song, next_song=next_song, window_width=window.width, window_height=window.height)
+    return render_template("tv/video_player.jinja", song=song, next_song=next_song, window_width=window.width, window_height=window.height)
 
 @app.route('/songs/<path:filename>')
 def serve_video(filename):
@@ -127,9 +127,9 @@ def start_download(video_id, video_title, username):
     # removes (Karaoke - Version) from title
     video_title = re.sub(r'\s*\(.*\)|\'', '', video_title)
 
-    num = len(song_queue.keys())
+    num = len(song_queue)
 
-    song_queue.update({num: { "id": video_id, "title": video_title, 'user': username }})
+    song_queue.append({ "id": video_id, "title": video_title, 'user': username })
 
     if num == 0:
         socketio.emit('play_video', namespace='/tv')
@@ -161,25 +161,23 @@ def player_skip():
     socketio.emit('player_skip', namespace='/tv')
 
 # queue controls
-@socketio.on('move_up', namespace='/')
+@socketio.on('move_up')
 def move_up(data):
     pos1 = int(data)
     pos2 = pos1 - 1
 
     song_queue[pos1], song_queue[pos2] = song_queue[pos2], song_queue[pos1]
 
-
-@socketio.on('move_down', namespace='/')
+@socketio.on('move_down')
 def move_down(data):
     pos1 = int(data)
     pos2 = pos1 + 1
 
     song_queue[pos1], song_queue[pos2] = song_queue[pos2], song_queue[pos1]
 
-@socketio.on('del_song', namespace='/')
-def del_song(id):
-    song_queue.pop(int(id))
-
+@socketio.on('del_song')
+def del_song(index):
+    song_queue.pop(int(index))
 
 # only queues songs that are already downloaded
 @socketio.on('queue_random', namespace='/')
@@ -199,7 +197,7 @@ def queue_random(username):
 
             num = len(song_queue.keys())
 
-            song_queue.update({num: { "id": data['id'], "title": data['title'], 'user': username }})
+            song_queue.append({ "id": data['id'], "title": data['title'], 'user': username })
 
             if num == 0:
                 socketio.emit('play_video', namespace='/tv')
@@ -227,7 +225,7 @@ def autoplay_workaround():
 
 @socketio.on('song_ended', namespace='/tv')
 def song_ended():
-    song_queue.pop(list(song_queue.keys())[0])
+    song_queue.pop(0)
 
 @socketio.on('toggle_fullscreen', namespace='/tv')
 def toggle_fullscreen():
@@ -240,4 +238,4 @@ if __name__ == "__main__":
 
     window = webview.create_window('OpenMic Karaoke', f'http://127.0.0.1:{port}/tv', fullscreen=False)
 
-    webview.start(gui='qt')
+    webview.start()
