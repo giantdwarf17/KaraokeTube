@@ -40,11 +40,6 @@
 		"HOME": "/home/vscode",
 	},
 
-    "remoteEnv": {
-        "WAYLAND_DISPLAY": "wayland-0",
-        "XDG_RUNTIME_DIR": "/run/user/1000"
-    },
-
 	"customizations": {
 		"vscode": {
 			"extensions": [

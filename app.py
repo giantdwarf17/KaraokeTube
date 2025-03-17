@@ -127,14 +127,8 @@ def start_download(video_id, video_title, username):
     # removes (Karaoke - Version) from title
     video_title = re.sub(r'\s*\(.*\)|\'', '', video_title)
 
-    num = len(song_queue)
-
-    song_queue.append({ "id": video_id, "title": video_title, 'user': username })
-
-    if num == 0:
-        socketio.emit('play_video', namespace='/tv')
-
     if not os.path.isfile(f'{song_dir}/{video_id}.mp4'):
+        print(f"Downloading {video_title}...")
         ydl_opts = {
             'outtmpl': f'{song_dir}/{video_id}.mp4',
             'format': "bestvideo[height<=1080][ext=mp4]+bestaudio[ext=m4a]",
@@ -146,6 +140,11 @@ def start_download(video_id, video_title, username):
                 ydl.download(video_id)
         except Exception as e:
             print(f"Error during video download: {e}")
+    
+    song_queue.append({ "id": video_id, "title": video_title, 'user': username })
+
+    if len(song_queue) == 1:
+        socketio.emit('play_video', namespace='/tv')
 
 # admin controls
 @socketio.on('player_restart', namespace='/')
@@ -195,11 +194,9 @@ def queue_random(username):
             with open(f'{song}.info.json') as json_data:
                 data = json.load(json_data)
 
-            num = len(song_queue.keys())
-
             song_queue.append({ "id": data['id'], "title": data['title'], 'user': username })
 
-            if num == 0:
+            if len(song_queue) == 1:
                 socketio.emit('play_video', namespace='/tv')
     
 
@@ -238,4 +235,4 @@ if __name__ == "__main__":
 
     window = webview.create_window('OpenMic Karaoke', f'http://127.0.0.1:{port}/tv', fullscreen=False)
 
-    webview.start()
+    webview.start(gui='qt')

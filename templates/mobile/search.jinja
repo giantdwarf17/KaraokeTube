@@ -24,7 +24,7 @@
             }}</a></p>
       </div>
       <div>
-        <button name="selection" onclick="start_download('{{ r['id'] }}', '{{ r['title'] }}')"
+        <button name="selection" onclick="start_download('{{ r['id'] }}', '{{ r['title'] }}');"
           class="btn btn-primary my-1">Add to queue</button>
       </div>
     </div>
@@ -32,14 +32,16 @@
   </div>
 </div>
 {% endif %}
+{% endblock %}
 
+{% block scripts %}
 <script>
   const socket = io("{{ url_for('index') }}");
 
   let username = localStorage.getItem("username");
 
-  if (username == null) {
-    let username = prompt("Enter your username");
+  if (username == "null") {
+    username = prompt("Enter your username");
     localStorage.setItem("username", username);
   }
 
