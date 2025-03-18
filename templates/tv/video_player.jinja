@@ -39,9 +39,9 @@
   const video = document.getElementById('video');
 
   // autoplay workaround
-  document.addEventListener('load',
-    socket.emit('autoplay_workaround')
-  );
+  window.addEventListener('load', function() {
+    socket.emit('autoplay_workaround');
+  });
 
   video.addEventListener('ended', function () {
     socket.emit('song_ended')

@@ -23,28 +23,30 @@
 	// Configure tool-specific properties.
 	// "customizations": {},
 
-	// Podman SELinux
 	"runArgs": [
 		"--userns=keep-id",
-		"--security-opt=label=disable"
+		"--security-opt=label=disable",
 		"--device=/dev/dri",
 		"--env=WAYLAND_DISPLAY=${localEnv:WAYLAND_DISPLAY}",
-		"--network=host"
+		"--network=host",
+		"--env=XDG_RUNTIME_DIR=${localEnv:XDG_RUNTIME_DIR}",
+		"--device=/dev/snd"
 	],
 
 	"mounts": [
-		"source=${localEnv:XAUTHORITY},target=/home/vscode/.Xauthority,type=bind,consistency=cached",
+		"source=${localEnv:XAUTHORITY},target=/home/vscode/.Xauthority,type=bind,consistency=cached"
 	],
 
 	"containerEnv": {
-		"HOME": "/home/vscode",
+		"HOME": "/home/vscode"
 	},
 
 	"customizations": {
 		"vscode": {
 			"extensions": [
 				"ms-python.python",
-				"ms-python.black-formatter"
+				"ms-python.black-formatter",
+				"samuelcolvin.jinjahtml"
 			]
 		}
 	}

@@ -12,9 +12,11 @@ from time import sleep
 from yt_dlp import YoutubeDL
 from flask import Flask, render_template, request, redirect, url_for, send_from_directory
 from flask_socketio import SocketIO
+from flask_font_awesome import FontAwesome
 
 app = Flask(__name__)
 socketio = SocketIO(app, async_mode='threading')
+font_awesome = FontAwesome(app)
 
 app.secret_key = os.urandom(12).hex()
 
@@ -201,15 +203,6 @@ def queue_random(username):
     
 
 # ---------------- TV Web Socket Listeners ----------------
-
-# for pause icon in admin portal
-@socketio.on('player_paused', namespace='/tv')
-def player_paused():
-    socketio.emit('player_paused', namespace='/')
-
-@socketio.on('player_resumed', namespace='/tv')
-def player_paused():
-    socketio.emit('player_resumed', namespace='/')
 
 @socketio.on('autoplay_workaround', namespace='/tv')
 def autoplay_workaround():
