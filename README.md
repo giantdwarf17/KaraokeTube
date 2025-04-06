@@ -80,4 +80,4 @@ pyinstaller build.spec
 <img width="250" style="float:left" alt="search" src="https://github.com/giantdwarf17/KaraokeTube/assets/1351017/fcdbc19e-ec0f-4722-908a-cfc1b9bf4a04">
 <img width="250" style="float:left" alt="admin" src="https://github.com/giantdwarf17/KaraokeTube/assets/1351017/304af1f6-085c-4386-9bcf-9fbbdfc838d0">
 
-<a href="https://www.flaticon.com/free-icons/microphone" title="microphone icons">Microphone icons created by Freepik - Flaticon</a>
+<a href="https://www.flaticon.com/free-icon/microphone_1404954?term=karaoke&page=1&position=18&origin=search&related_id=1404954" title="microphone icons">Microphone icons provided by Freepik - Flaticon</a>
