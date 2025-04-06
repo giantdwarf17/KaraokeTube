@@ -237,6 +237,6 @@ if __name__ == "__main__":
     thread.daemon = True
     thread.start()
 
-    window = webview.create_window('OpenMic Karaoke', f'http://127.0.0.1:{port}/tv', fullscreen=False)
+    window = webview.create_window('KaraokeTube', f'http://127.0.0.1:{port}/tv', fullscreen=False)
 
     webview.start(gui='qt')
