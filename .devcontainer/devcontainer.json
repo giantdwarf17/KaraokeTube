@@ -29,8 +29,8 @@
 		"--device=/dev/dri",
 		"--env=WAYLAND_DISPLAY=${localEnv:WAYLAND_DISPLAY}",
 		"--network=host",
-		"--env=XDG_RUNTIME_DIR=${localEnv:XDG_RUNTIME_DIR}",
-		"--device=/dev/snd"
+		"--env=XDG_RUNTIME_DIR=${localEnv:XDG_RUNTIME_DIR}"
+		// "--device=/dev/snd"
 	],
 
 	"mounts": [

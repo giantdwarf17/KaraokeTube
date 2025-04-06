@@ -38,11 +38,6 @@
 <script>
   const video = document.getElementById('video');
 
-  // autoplay workaround
-  window.addEventListener('load', function() {
-    socket.emit('autoplay_workaround');
-  });
-
   video.addEventListener('ended', function () {
     socket.emit('song_ended')
     location.href = "{{ url_for('tv') }}";
@@ -52,18 +47,20 @@
     video.currentTime = 0;
   });
 
+  socket.on('player_play', function () {
+    socket.emit('player_resumed')
+    video.play();
+  });
+
   socket.on('player_pause', function () {
-    if (!video.paused) {
-      video.pause();
-      socket.emit('player_paused')
-    } else {
-      video.play();
-      socket.emit('player_resumed')
-    }
+    socket.emit('player_paused')
+    video.pause();
   });
 
   socket.on('player_skip', function () {
     video.currentTime = video.duration;
   });
+
+  socket.emit('autoplay_workaround');
 </script>
 {% endblock %}

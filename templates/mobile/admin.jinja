@@ -16,7 +16,6 @@
         <button name="restart" type="button" onclick="restart()" class="btn btn-sm">
             <i class="fa-solid fa-backward-fast"></i>
         </button>
-                
         <button id="pauseButton" name="pause" type="button" onclick="pause()" class="btn btn-sm">
             <i id="pauseIcon" class="fa-solid fa-pause"></i>
         </button>
@@ -42,15 +41,22 @@
     function pause() {
         if (isPaused) {
             socket.emit('player_play');
-            pauseIcon.classList.remove('fa-play');
-            pauseIcon.classList.add('fa-pause');
         } else {
             socket.emit('player_pause');
-            pauseIcon.classList.remove('fa-pause');
-            pauseIcon.classList.add('fa-play');
         }
-        isPaused = !isPaused;
     }
+
+    socket.on('player_resumed', function () {
+        pauseIcon.classList.remove('fa-play');
+        pauseIcon.classList.add('fa-pause');
+        isPaused = false;
+    });
+
+    socket.on('player_paused', function () {
+        pauseIcon.classList.remove('fa-pause');
+        pauseIcon.classList.add('fa-play');
+        isPaused = true;
+    });
 
     function skip() {
         socket.emit('player_skip');

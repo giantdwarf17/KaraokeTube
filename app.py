@@ -7,7 +7,6 @@ import webview
 import random
 import json
 import glob
-import platform
 from time import sleep
 from yt_dlp import YoutubeDL
 from flask import Flask, render_template, request, redirect, url_for, send_from_directory
@@ -157,6 +156,10 @@ def player_restart():
 def player_pause():
     socketio.emit('player_pause', namespace='/tv')
 
+@socketio.on('player_play', namespace='/')
+def player_play():
+    socketio.emit('player_play', namespace='/tv')
+
 @socketio.on('player_skip', namespace='/')
 def player_skip():
     socketio.emit('player_skip', namespace='/tv')
@@ -212,6 +215,14 @@ def autoplay_workaround():
         video.play();
         """
     )
+
+@socketio.on('player_resumed', namespace='/tv')
+def player_resumed():
+    socketio.emit('player_resumed', namespace='/')
+
+@socketio.on('player_paused', namespace='/tv')
+def player_paused():
+    socketio.emit('player_paused', namespace='/')
 
 @socketio.on('song_ended', namespace='/tv')
 def song_ended():
